@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node ./src/index.ts",
-    "nodemon": "nodemon ./src/index.ts",
+    "start:prod": "ts-node ./src/index.ts",
+    "start:dev": "nodemon ./src/index.ts",
     "lint": "eslint . --ext .ts"
   },
   "repository": {
