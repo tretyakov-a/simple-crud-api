@@ -1,17 +1,21 @@
 
 export default class Url {
   private readonly url: string = '';
-  public location: string = '';
-  public id?: string = '';
+  public parts: string[] | [];
   
-  public parse(urlStr: string = ''): void {
-    const match = urlStr.match(/^\/api\/users(?:\/(.*)){0,1}$/);
-    if (!match) {
-      throw new Error(`Resourse ${this.url} not found`);
-    }
-    const [ location, id ] = match;
-    this.location = location;
-    this.id = id;
-  };
+  constructor(urlStr: string = '') {
+    this.url = urlStr;
+    this.parts = this.url.split('/');
+  }
 
+  public compare(urlTemplate: string = ''): boolean {
+    const tplParts: string[] = urlTemplate.split('/');
+    return this.parts.every((part: string, i: number) => {
+      return /^\{(.*)\}$/.test(tplParts[i]) || part === tplParts[i];
+    })
+  }
+
+  public getUserId(): string {
+    return this.parts[this.parts.length - 1];
+  }
 }

@@ -2,8 +2,8 @@ import fsPromises from 'fs/promises'
 import path from 'path';
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 import { getConstants } from '../common/utils.js';
-import { IUserService, UserInfo } from './user-service.interface';
-import { IUser } from './user.inteface';
+import { IUserService, UserInfo, UserResult } from './user-service.interface';
+import { IUser } from './user.interface';
 
 const { __dirname } = getConstants(import.meta.url);
 
@@ -29,14 +29,14 @@ export class UserDB implements IUserService {
     }, {});
   }
 
-  public async getAllUsers(): Promise<IUser[] | []> {
+  public async getAllUsers(): Promise<UserResult> {
     return Object.keys(this.db).map((key: string): IUser => {
       const userInfo: UserInfo = this.db[key];
       return { id: key, ...userInfo };
     });
   };
 
-  public async getUserById(id: string): Promise<IUser | null> {
+  public async getUserById(id: string = ''): Promise<UserResult> {
     if (!uuidValidate(id)) {
       throw new Error(`Invalid user ID: ${id}`);
     }
@@ -47,7 +47,7 @@ export class UserDB implements IUserService {
     return { id, ...userInfo };
   };
 
-  public async postUser(userInfo: UserInfo): Promise<IUser> {
+  public async postUser(userInfo: UserInfo): Promise<UserResult> {
     const id = uuidv4();
     this.db[id] = { ...userInfo };
     return { id, ...userInfo};
