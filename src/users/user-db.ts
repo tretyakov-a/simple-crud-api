@@ -4,6 +4,7 @@ import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 import { getConstants } from '../common/utils.js';
 import { IUserService, UserInfo, UserResult } from './user.interface.js';
 import { IUser } from './user.interface.js';
+import { InvalidUserIdError, NonExistentUserIdError } from '../errors.js';
 
 const { __dirname } = getConstants(import.meta.url);
 
@@ -38,10 +39,10 @@ export class UserDB implements IUserService {
 
   private checkId(id: string): void {
     if (!uuidValidate(id)) {
-      throw new Error(`Invalid user ID: ${id}`);
+      throw new InvalidUserIdError(id);
     }
     if (!this.db[id]) {
-      throw new Error(`There is no user with ID: ${id}`);
+      throw new NonExistentUserIdError(id);
     }
   }
 

@@ -1,6 +1,6 @@
 
 export default class Url {
-  private readonly url: string = '';
+  public readonly url: string = '';
   public parts: string[] | [];
   
   constructor(urlStr: string = '') {

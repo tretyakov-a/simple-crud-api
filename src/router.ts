@@ -1,5 +1,6 @@
-import { IncomingMessage, ServerResponse } from 'http';
+import { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http';
 import Url from './url.js';
+import { MyError, NonExistentEndpointError } from './errors.js';
 
 export enum HttpMethod {
   GET = 'GET',
@@ -25,9 +26,9 @@ export interface IRouteProcessor<T> {
 
 export class Router<T> {
   private routes: IRoute<T>[];
-  public url: Url | undefined;
-  public request: IncomingMessage | undefined;
-  public response: ServerResponse | undefined;
+  public url?: Url;
+  public request?: IncomingMessage;
+  public response?: ServerResponse;
 
   constructor() {
     this.routes = [];
@@ -41,30 +42,33 @@ export class Router<T> {
       const { processor } = this.getRoute(req.method as HttpMethod);
       const { data, responseCode } = await processor.call(this);
 
-      res.writeHead(responseCode, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(data));
+      this.setResponse(
+        responseCode,
+        { 'Content-Type': 'application/json' },
+        data
+      );
     } catch (err) {
-      res.writeHead(404, { 'Content-Type': 'text/html; charset=UTF-8' });
-      res.end(`Resourse ${req.url} is not found\n${(err as Error).stack}`);
+      const { message, httpResponseCode } = err as MyError;
+      
+      this.setResponse(
+        httpResponseCode,
+        { 'Content-Type': 'text/html; charset=UTF-8' },
+        message
+      );
     }
+  }
+
+  private setResponse(code: number, headers: OutgoingHttpHeaders, data: T | string) {
+    this.response?.writeHead(code, headers);
+    this.response?.end(typeof data === 'string' ? data : JSON.stringify(data));
   }
 
   private getRoute(method: HttpMethod): IRoute<T> {
     const route = this.routes.find((r: IRoute<T>) => r.method === method && this.url?.compare(r.url));
     if (route === undefined) {
-      throw new Error(`Route ${JSON.stringify(this.url)} no found`);
+      throw new NonExistentEndpointError(this.url?.url);
     }
     return route;
-  }
-
-  public onError(req: IncomingMessage, res: ServerResponse, err: Error) {
-    res.writeHead(404, { 'Content-Type': 'text/html; charset=UTF-8' });
-    res.end(`Resourse ${req.url} is not found\n${err.stack}`);
-  }
-
-  public onSuccess<T>(res: ServerResponse, data: T): void {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(data));
   }
 
   private addRoute(route: IRoute<T>) {

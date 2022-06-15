@@ -2,6 +2,7 @@ import { IProcessResult, Router } from "../router.js";
 import { UserDB } from './user-db.js';
 import { readRequestBody } from '../common/utils.js';
 import { UserInfo, UserResult } from './user.interface.js';
+import { InvalidRequestError } from '../errors.js';
 
 const baseUrl = '/api/users';
 const userService = new UserDB();
@@ -23,7 +24,7 @@ userRouter.post(baseUrl, async function(): Promise<IProcessResult<UserResult>> {
   const body = await readRequestBody(this.request);
   const { username, age, hobbies }: Partial<UserInfo> = JSON.parse(body);
   if (!username || !age || !hobbies) {
-    throw new Error(`Request should contain username, age and hobbies fields`);
+    throw new InvalidRequestError();
   }
   const data = await userService.postUser({ username, age, hobbies });
   return { data, responseCode: 201 };
