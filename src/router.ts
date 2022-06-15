@@ -8,10 +8,10 @@ export enum HttpMethod {
   DELETE = 'DELETE',
 }
 
-interface IRoute {
+interface IRoute<T> {
   method: HttpMethod,
   url: string,
-  processor: Function,
+  processor: IRouteProcessor<T>,
 }
 
 export interface IProcessResult<T> {
@@ -19,8 +19,15 @@ export interface IProcessResult<T> {
   responseCode: number,
 }
 
-export class Router {
-  private routes: IRoute[];
+export interface IRouteProcessor<T> {
+  (this: Router<T>): Promise<IProcessResult<T>>
+}
+
+export class Router<T> {
+  private routes: IRoute<T>[];
+  public url: Url | undefined;
+  public request: IncomingMessage | undefined;
+  public response: ServerResponse | undefined;
 
   constructor() {
     this.routes = [];
@@ -28,9 +35,11 @@ export class Router {
 
   public process = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
     try {
-      const url: Url = new Url(req.url);
-      const { processor } = this.getRoute(req.method as HttpMethod, url);
-      const { data, responseCode } = await processor.call(null, req, res, url);
+      this.url = new Url(req.url);
+      this.request = req;
+      this.response = res;
+      const { processor } = this.getRoute(req.method as HttpMethod);
+      const { data, responseCode } = await processor.call(this);
 
       res.writeHead(responseCode, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify(data));
@@ -40,10 +49,10 @@ export class Router {
     }
   }
 
-  private getRoute(method: HttpMethod, url: Url): IRoute {
-    const route = this.routes.find((r: IRoute) => r.method === method && url.compare(r.url));
+  private getRoute(method: HttpMethod): IRoute<T> {
+    const route = this.routes.find((r: IRoute<T>) => r.method === method && this.url?.compare(r.url));
     if (route === undefined) {
-      throw new Error(`Route ${JSON.stringify(url)} no found`);
+      throw new Error(`Route ${JSON.stringify(this.url)} no found`);
     }
     return route;
   }
@@ -58,23 +67,23 @@ export class Router {
     res.end(JSON.stringify(data));
   }
 
-  private addRoute(route: IRoute) {
+  private addRoute(route: IRoute<T>) {
     this.routes.push(route);
   }
 
-  public get(url: string, processor: Function): void {
+  public get(url: string, processor: IRouteProcessor<T>): void {
     this.addRoute({ method: HttpMethod.GET, url, processor });
   }
   
-  public post(url: string, processor: Function): void {
+  public post(url: string, processor: IRouteProcessor<T>): void {
     this.addRoute({ method: HttpMethod.POST, url, processor });
   }
 
-  // put() {
+  public put(url: string, processor: IRouteProcessor<T>): void {
+    this.addRoute({ method: HttpMethod.PUT, url, processor });
+  }
 
-  // }
-
-  // delete() {
-
-  // }
+  public delete(url: string, processor: IRouteProcessor<T>): void {
+    this.addRoute({ method: HttpMethod.DELETE, url, processor });
+  }
 }

@@ -1,18 +1,18 @@
 
-import http, { IncomingMessage, ServerResponse } from 'http';
+import http from 'http';
 import { Router } from './router.js';
+import { UserResult } from 'users/user.interface.js';
 
 export class App {
-  private readonly router: Router;
+  private readonly router: Router<UserResult>;
   private readonly server: http.Server;
-  static readonly defaultPort: string = '3000';
 
-  constructor(userService: Router) {
+  constructor(userService: Router<UserResult>) {
     this.router = userService;
     this.server = http.createServer(this.router.process);
   }
 
-  public listen(port: string = App.defaultPort, cb: () => void): void {
+  public listen(port: number, cb: () => void): void {
     this.server.listen(port, cb);
   }
 }

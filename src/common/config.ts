@@ -5,7 +5,7 @@ import { getConstants } from './utils.js';
 const { __dirname } = getConstants(import.meta.url);
 
 type Config = {
-  PORT: string | undefined,
+  PORT: number,
 }
 
 dotenv.config({
@@ -13,5 +13,5 @@ dotenv.config({
 });
 
 export const config: Config = {
-  PORT: process.env.PORT,
+  PORT: Number(process.env.PORT) | 3000,
 };

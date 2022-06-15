@@ -2,18 +2,18 @@ import fsPromises from 'fs/promises'
 import path from 'path';
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
 import { getConstants } from '../common/utils.js';
-import { IUserService, UserInfo, UserResult } from './user-service.interface';
-import { IUser } from './user.interface';
+import { IUserService, UserInfo, UserResult } from './user.interface.js';
+import { IUser } from './user.interface.js';
 
 const { __dirname } = getConstants(import.meta.url);
 
-type UserDb = {
+type UserDatabase = {
   [key: string]: UserInfo,
 };
 
 export class UserDB implements IUserService {
   private pathToFile: string;
-  private db: UserDb;
+  private db: UserDatabase;
 
   constructor() {
     this.pathToFile = '';
@@ -23,7 +23,7 @@ export class UserDB implements IUserService {
   public async initDb(filename: string): Promise<void> {
     this.pathToFile = path.resolve(__dirname, filename);
     const data = JSON.parse(await fsPromises.readFile(this.pathToFile, 'utf8'));
-    this.db = data.reduce((acc: UserDb, item: IUser) => {
+    this.db = data.reduce((acc: UserDatabase, item: IUser) => {
       const userInfo: UserInfo = item;
       return { ...acc, [item.id]: userInfo };
     }, {});
