@@ -36,13 +36,17 @@ export class UserDB implements IUserService {
     });
   };
 
-  public async getUserById(id: string = ''): Promise<UserResult> {
+  private checkId(id: string): void {
     if (!uuidValidate(id)) {
       throw new Error(`Invalid user ID: ${id}`);
     }
     if (!this.db[id]) {
       throw new Error(`There is no user with ID: ${id}`);
     }
+  }
+
+  public async getUserById(id: string = ''): Promise<UserResult> {
+    this.checkId(id);
     const userInfo: UserInfo = this.db[id];
     return { id, ...userInfo };
   };
@@ -53,11 +57,16 @@ export class UserDB implements IUserService {
     return { id, ...userInfo};
   };
 
-  public async putUser(id: string, userInfo: UserInfo): Promise<void> {
-
+  public async putUser(id: string = '', userInfo: Partial<UserInfo>): Promise<UserResult> {
+    this.checkId(id);
+    this.db[id] = { ...this.db[id], ...userInfo };
+    return { id, ...this.db[id] };
   };
 
-  public async deleteUser(id: string): Promise<void> {
-
+  public async deleteUser(id: string = ''): Promise<UserResult> {
+    this.checkId(id);
+    const deletedUser = { id, ...this.db[id] };
+    delete this.db[id];
+    return deletedUser;
   };
 }

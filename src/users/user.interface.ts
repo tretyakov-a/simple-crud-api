@@ -12,6 +12,6 @@ export interface IUserService {
   getAllUsers: () => Promise<UserResult>;
   getUserById: (id: string) => Promise<UserResult>;
   postUser: (userInfo: UserInfo) => Promise<UserResult>;
-  putUser: (id: string, userInfo: UserInfo) => Promise<void>;
-  deleteUser: (id: string) => Promise<void>;
+  putUser: (id: string, userInfo: UserInfo) => Promise<UserResult>;
+  deleteUser: (id: string) => Promise<UserResult>;
 }
