@@ -35,7 +35,7 @@ export class UserDB implements IUserService {
       const userInfo: UserInfo = this.db[key];
       return { id: key, ...userInfo };
     });
-  };
+  }
 
   private checkId(id: string): void {
     if (!uuidValidate(id)) {
@@ -46,28 +46,28 @@ export class UserDB implements IUserService {
     }
   }
 
-  public async getUserById(id: string = ''): Promise<UserResult> {
+  public async getUserById(id = ''): Promise<UserResult> {
     this.checkId(id);
     const userInfo: UserInfo = this.db[id];
     return { id, ...userInfo };
-  };
+  }
 
   public async postUser(userInfo: UserInfo): Promise<UserResult> {
     const id = uuidv4();
     this.db[id] = { ...userInfo };
     return { id, ...userInfo};
-  };
+  }
 
-  public async putUser(id: string = '', userInfo: Partial<UserInfo>): Promise<UserResult> {
+  public async putUser(id = '', userInfo: Partial<UserInfo>): Promise<UserResult> {
     this.checkId(id);
     this.db[id] = { ...this.db[id], ...userInfo };
     return { id, ...this.db[id] };
-  };
+  }
 
-  public async deleteUser(id: string = ''): Promise<UserResult> {
+  public async deleteUser(id = ''): Promise<UserResult> {
     this.checkId(id);
     const deletedUser = { id, ...this.db[id] };
     delete this.db[id];
     return deletedUser;
-  };
+  }
 }

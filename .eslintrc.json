@@ -7,8 +7,7 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:node/recommended",
-    "airbnb-base"
+    "plugin:node/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": 2020,
@@ -22,6 +21,8 @@
   "rules": {
     "no-debugger": "off",
     "no-console": 0,
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "node/no-missing-import": "off",
+    "node/no-unpublished-import": ["error", {"allowModules": ["dotenv"]}]
   }
 }

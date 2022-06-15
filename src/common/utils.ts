@@ -11,7 +11,7 @@ export const getConstants = (url: string) => {
 
 export const readRequestBody = async (req: IncomingMessage | undefined): Promise<string> => {
   return new Promise((resolve, reject) => {
-    let data: string = '';
+    let data = '';
     req?.on('error', (err) => { console.error(err); reject(err) });
     req?.on('data', (chunk: Buffer) => data += chunk.toString());
     req?.on('end', () => {
