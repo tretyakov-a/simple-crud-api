@@ -1,14 +1,47 @@
 
-import { IncomingMessage, ServerResponse } from 'http';
+import http, { IncomingMessage, ServerResponse } from 'http';
 import { IUserService, UserInfo } from './users/user-service.interface.js';
 import { readRequestBody } from './common/utils.js';
 import { IUser } from 'users/user.inteface.js';
+import Url from './url.js';
+import Router from './router.js';
 
 export class App {
   private readonly userService: IUserService;
+  private readonly server: http.Server;
+  private readonly defaultPort: string = '3000';
 
   constructor(userService: IUserService) {
     this.userService = userService;
+    this.server = http.createServer(async (req, res) => {
+      const url: Url = new Url();
+      try {
+        url.parse(req.url);
+      } catch (err) {
+        res.writeHead(404, { 'Content-Type': 'text/html; charset=UTF-8' });
+        res.end(`Resourse ${req.url} is not found`);
+      }
+  
+      if (req.method === 'GET' && url.id === undefined) {
+        return await this.getAllUsers(req, res);
+      }
+    
+      if (req.method === 'GET' && url.id !== undefined) {
+        return await this.getUserById(req, res, url.id);
+      }
+  
+      if (req.method === 'POST') {
+        return await this.postUser(req, res);
+      }
+    });
+  }
+
+  public listen(port: string = this.defaultPort, cb: () => void): void {
+    this.server.listen(port, cb);
+  }
+
+  public use(route: string, router: Router) {
+
   }
 
   public async getAllUsers(req: IncomingMessage, res: ServerResponse): Promise<void> {
