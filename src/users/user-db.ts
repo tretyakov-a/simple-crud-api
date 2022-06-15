@@ -1,11 +1,11 @@
 import fsPromises from 'fs/promises'
 import path from 'path';
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid';
-import { fileURLToPath } from 'url';
+import { getConstants } from '../common/utils.js';
 import { IUserService, UserInfo } from './user-service.interface';
 import { IUser } from './user.inteface';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const { __dirname } = getConstants(import.meta.url);
 
 type UserDb = {
   [key: string]: UserInfo,

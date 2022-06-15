@@ -1,5 +1,8 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import { getConstants } from './utils.js';
+
+const { __dirname } = getConstants(import.meta.url);
 
 type Config = {
   PORT: string | undefined,
