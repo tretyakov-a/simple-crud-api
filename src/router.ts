@@ -1,13 +1,7 @@
 import { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http';
 import Url from './url.js';
-import { MyError, NonExistentEndpointError } from './errors.js';
-
-export enum HttpMethod {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
-}
+import { HttpError, NonExistentEndpointError } from './errors.js';
+import { HttpMethod } from './common/constants.js';
 
 interface IRoute<T> {
   method: HttpMethod,
@@ -48,8 +42,8 @@ export class Router<T> {
         data
       );
     } catch (err) {
-      const { message, httpResponseCode } = err as MyError;
-      
+      const { message, httpResponseCode } = err as HttpError;
+
       this.setResponse(
         httpResponseCode,
         { 'Content-Type': 'text/html; charset=UTF-8' },

@@ -1,5 +1,6 @@
+import { HttpCodes } from './common/constants.js';
 
-export class MyError extends Error {
+export class HttpError extends Error {
   public readonly httpResponseCode: number;
 
   constructor(message: string, httpResponseCode: number) {
@@ -8,41 +9,41 @@ export class MyError extends Error {
   }
 }
 
-export class InvalidRequestError extends MyError {
+export class InvalidRequestError extends HttpError {
   constructor() {
-    super(`Requset should contain required fields: 'username, age, hobbies'`, 400);
+    super(`Requset should contain required fields: 'username, age, hobbies'`, HttpCodes.BAD_REQUEST);
   }
 }
 
-export class InvalidUserIdError extends MyError {
+export class InvalidUserIdError extends HttpError {
   public readonly userId: string;
 
-  constructor(userId: string = '') {
-    super(`Invalid userId: '${userId}'`, 400);
+  constructor(userId = '') {
+    super(`Invalid userId: '${userId}'`, HttpCodes.BAD_REQUEST);
     this.userId = userId;
   }
 }
 
-export class NonExistentUserIdError extends MyError {
+export class NonExistentUserIdError extends HttpError {
   public readonly userId: string;
 
-  constructor(userId: string = '') {
-    super(`Record with userId '${userId}' doesn't exist`, 404);
+  constructor(userId = '') {
+    super(`Record with userId '${userId}' doesn't exist`, HttpCodes.NOT_FOUND);
     this.userId = userId;
   }
 }
 
-export class NonExistentEndpointError extends MyError {
+export class NonExistentEndpointError extends HttpError {
   public readonly url: string;
 
-  constructor(url: string = '') {
-    super(`Endpoint '${url}' doesn't exist`, 404);
+  constructor(url = '') {
+    super(`Endpoint '${url}' doesn't exist`, HttpCodes.NOT_FOUND);
     this.url = url;
   }
 }
 
-export class InternalServerError extends MyError {
+export class InternalServerError extends HttpError {
   constructor() {
-    super(`Internal server error`, 500);
+    super(`Internal server error`, HttpCodes.SERVER_ERROR);
   }
 }
