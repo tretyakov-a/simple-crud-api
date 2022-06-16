@@ -1,13 +1,15 @@
 
 import http from 'http';
 import { Router } from './router.js';
-import { UserResult } from 'users/user.interface.js';
+import { UserResponseData } from 'users/user.interface.js';
+
+type RouterData = UserResponseData;
 
 export class App {
-  private readonly router: Router<UserResult>;
+  private readonly router: Router<RouterData>;
   private readonly server: http.Server;
 
-  constructor(userService: Router<UserResult>) {
+  constructor(userService: Router<RouterData>) {
     this.router = userService;
     this.server = http.createServer(this.router.process);
   }

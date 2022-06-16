@@ -6,12 +6,12 @@ export interface IUser {
 }
 
 export type UserInfo = Omit<IUser, 'id'>;
-export type UserResult = IUser | IUser[];
+export type UserResponseData = IUser | IUser[];
 
 export interface IUserService {
-  getAllUsers: () => Promise<UserResult>;
-  getUserById: (id: string) => Promise<UserResult>;
-  postUser: (userInfo: UserInfo) => Promise<UserResult>;
-  putUser: (id: string, userInfo: UserInfo) => Promise<UserResult>;
-  deleteUser: (id: string) => Promise<UserResult>;
+  getAllUsers: () => Promise<UserResponseData>;
+  getUserById: (id: string) => Promise<UserResponseData>;
+  postUser: (userInfo: UserInfo) => Promise<UserResponseData>;
+  putUser: (id: string, userInfo: UserInfo) => Promise<UserResponseData>;
+  deleteUser: (id: string) => Promise<UserResponseData>;
 }
