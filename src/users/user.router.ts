@@ -7,7 +7,6 @@ import { HttpCodes } from '../common/constants.js';
 
 const baseUrl = '/api/users';
 const userService: UserDB = new UserDB();
-userService.initDb('users.json');
 
 const userRouter: Router<UserResponseData> = new Router();
 type ProcessResult = Promise<IProcessResult<UserResponseData>>;
