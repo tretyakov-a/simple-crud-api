@@ -1,6 +1,6 @@
 import { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http';
 import Url from './url.js';
-import { HttpError, NonExistentEndpointError } from './errors.js';
+import { HttpError, NonExistentEndpointError, InvalidRequestError } from './errors.js';
 import { HttpMethod } from './common/constants.js';
 
 interface IRoute<T> {
@@ -33,6 +33,8 @@ export class Router<T> {
       this.url = new Url(req.url);
       this.request = req;
       this.response = res;
+      this.checkRequestHeaders();
+      
       const { processor } = this.getRoute(req.method as HttpMethod);
       const { data, responseCode } = await processor.call(this);
 
@@ -49,6 +51,14 @@ export class Router<T> {
         { 'Content-Type': 'text/html; charset=UTF-8' },
         message
       );
+    }
+  }
+
+  private checkRequestHeaders() {
+    const { headers, method } = this.request as IncomingMessage;
+    const { POST, PUT } = HttpMethod;
+    if ((method === POST || method === PUT) && headers['content-type'] !== 'application/json') {
+      throw new InvalidRequestError();
     }
   }
 

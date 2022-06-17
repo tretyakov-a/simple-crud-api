@@ -11,7 +11,7 @@ export class HttpError extends Error {
 
 export class InvalidRequestError extends HttpError {
   constructor() {
-    super(`Requset should contain required fields: 'username, age, hobbies'`, HttpCodes.BAD_REQUEST);
+    super(`Request should contain required fields in json format: 'username, age, hobbies'`, HttpCodes.BAD_REQUEST);
   }
 }
 

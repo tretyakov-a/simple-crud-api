@@ -123,7 +123,7 @@ describe('3: Testing data errors', () => {
       .set('Content-type', 'application/json')
       .send(JSON.stringify(notFullyFilledUserData));
     expect(response.status).toBe(400);
-    expect(response.text).toBe(`Requset should contain required fields: 'username, age, hobbies'`);
+    expect(response.text).toBe(`Request should contain required fields in json format: 'username, age, hobbies'`);
   });
 
   it('With a GET api/users request, we try to get all records after wrong POST', async () => {
@@ -132,6 +132,23 @@ describe('3: Testing data errors', () => {
     expect(response.body).toStrictEqual([]);
   });
 
+  it('With a POST api/users request, we try to create new record using invalid Content-type', async () => {
+    const response = await request
+      .post('/api/users')
+      .set('Content-type', 'text/plain')
+      .send(JSON.stringify(userData));
+    expect(response.status).toBe(400);
+    expect(response.text).toBe(`Request should contain required fields in json format: 'username, age, hobbies'`);
+  });
+
+  it('With a PUT api/users/{userId} request, we try to update record using invalid Content-type', async () => {
+    const response = await request
+      .post('/api/users/a97fac64-0ccb-4cba-9014-37b65ed28ea7')
+      .set('Content-type', 'text/plain')
+      .send(JSON.stringify(userData));
+    expect(response.status).toBe(400);
+    expect(response.text).toBe(`Request should contain required fields in json format: 'username, age, hobbies'`);
+  });
 });
 
 
