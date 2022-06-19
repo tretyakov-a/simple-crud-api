@@ -10,8 +10,8 @@ export type UserResponseData = IUser | IUser[];
 
 export interface IUserService {
   getAllUsers: () => Promise<UserResponseData>;
-  getUserById: (id: string) => Promise<UserResponseData>;
+  getUserById: (id: string | undefined) => Promise<UserResponseData>;
   postUser: (userInfo: UserInfo) => Promise<UserResponseData>;
-  putUser: (id: string, userInfo: UserInfo) => Promise<UserResponseData>;
-  deleteUser: (id: string) => Promise<UserResponseData>;
+  putUser: (id: string | undefined, userInfo: Partial<UserInfo>) => Promise<UserResponseData>;
+  deleteUser: (id: string | undefined) => Promise<UserResponseData>;
 }

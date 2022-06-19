@@ -62,7 +62,7 @@ describe('2: Testing userId errors', () => {
   const nonExistingId = 'a97fac64-0ccb-4cba-9014-37b65ed28ea7';
   const invalidId = 'a97fac64-0ccb-4cba-9014';
 
-  it('With a GET api/user/{userId} request, we try to get existing record', async () => {
+  it('With a GET api/user/{userId} request, we try to get non existing record', async () => {
     const response = await request.get(`/api/users/${nonExistingId}`);
     expect(response.status).toBe(404);
     expect(response.text).toBe(`Record with userId 'a97fac64-0ccb-4cba-9014-37b65ed28ea7' doesn't exist`);

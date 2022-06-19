@@ -14,6 +14,10 @@ export class UserDB implements IUserService {
     this.db = {};
   }
 
+  public getNumberOfRecords(): number {
+    return Object.keys(this.db).length;
+  }
+
   public async getAllUsers(): Promise<UserResponseData> {
     return Object.keys(this.db).map((key: string): IUser => {
       const userInfo: UserInfo = this.db[key];

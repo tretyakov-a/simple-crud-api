@@ -2,9 +2,11 @@ import { HttpCodes } from './common/constants.js';
 
 export class HttpError extends Error {
   public readonly httpResponseCode: number;
+  public httpErrorMessage: string;
 
   constructor(message: string, httpResponseCode: number) {
     super(message);
+    this.httpErrorMessage = message;
     this.httpResponseCode = httpResponseCode;
   }
 }

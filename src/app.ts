@@ -6,7 +6,7 @@ import { UserResponseData } from './users/user.interface.js';
 type RouterData = UserResponseData;
 
 export class App {
-  private readonly router: Router<RouterData>;
+  public router: Router<RouterData>;
   public readonly server: http.Server;
 
   constructor(userService: Router<RouterData>) {

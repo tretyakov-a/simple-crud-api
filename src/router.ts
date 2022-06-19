@@ -1,7 +1,10 @@
+import process from 'process';
+import cluster from 'cluster';
 import { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http';
 import Url from './url.js';
 import { HttpError, NonExistentEndpointError, InvalidRequestError } from './errors.js';
 import { HttpMethod } from './common/constants.js';
+import { IUserService } from './users/user.interface.js';
 
 interface IRoute<T> {
   method: HttpMethod,
@@ -10,7 +13,7 @@ interface IRoute<T> {
 }
 
 export interface IProcessResult<T> {
-  data: T,
+  data: T | undefined,
   responseCode: number,
 }
 
@@ -23,12 +26,17 @@ export class Router<T> {
   public url?: Url;
   public request?: IncomingMessage;
   public response?: ServerResponse;
+  public userService?: IUserService;
 
   constructor() {
     this.routes = [];
   }
 
   public process = async (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+    const logMessage = (method: HttpMethod, code: number): void => {
+      if (cluster.isWorker)
+        console.log(`Worker ${cluster.worker?.id} processed ${method} request with code ${code}`);
+    }
     try {
       this.url = new Url(req.url);
       this.request = req;
@@ -37,19 +45,19 @@ export class Router<T> {
       
       const { processor } = this.getRoute(req.method as HttpMethod);
       const { data, responseCode } = await processor.call(this);
-
+      logMessage(req.method as HttpMethod, responseCode);
       this.setResponse(
         responseCode,
         { 'Content-Type': 'application/json' },
         data
       );
     } catch (err) {
-      const { message, httpResponseCode } = err as HttpError;
-
+      const { httpErrorMessage, httpResponseCode } = err as HttpError;
+      logMessage(req.method as HttpMethod, httpResponseCode);
       this.setResponse(
         httpResponseCode,
         { 'Content-Type': 'text/html; charset=UTF-8' },
-        message
+        httpErrorMessage
       );
     }
   }
@@ -62,7 +70,7 @@ export class Router<T> {
     }
   }
 
-  private setResponse(code: number, headers: OutgoingHttpHeaders, data: T | string) {
+  private setResponse(code: number, headers: OutgoingHttpHeaders, data: T | string | undefined) {
     this.response?.writeHead(code, headers);
     this.response?.end(typeof data === 'string' ? data : JSON.stringify(data));
   }
