@@ -1,9 +1,8 @@
-import process from 'process';
 import cluster from 'cluster';
 import { IncomingMessage, OutgoingHttpHeaders, ServerResponse } from 'http';
 import Url from './url.js';
 import { HttpError, NonExistentEndpointError, InvalidRequestError } from './errors.js';
-import { HttpMethod } from './common/constants.js';
+import { HttpMethod, HttpCodes } from './common/constants.js';
 import { IUserService } from './users/user.interface.js';
 
 interface IRoute<T> {
@@ -55,7 +54,7 @@ export class Router<T> {
       const { httpErrorMessage, httpResponseCode } = err as HttpError;
       logMessage(req.method as HttpMethod, httpResponseCode);
       this.setResponse(
-        httpResponseCode,
+        httpResponseCode || HttpCodes.BAD_REQUEST,
         { 'Content-Type': 'text/html; charset=UTF-8' },
         httpErrorMessage
       );

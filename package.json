@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "rm -rf ./dist/* && tsc && cross-env NODE_OPTIONS=--experimental-vm-modules jest ./tests",
-    "start:prod": "ts-node ./src/index.ts",
-    "start:multi": "ts-node ./src/index.cluster.ts",
+    "start:prod": "rm -rf ./dist/* && tsc && node ./dist/index.js",
+    "start:multi": "rm -rf ./dist/* && tsc && node ./dist/index.cluster.js",
     "start:dev": "nodemon ./src/index.ts",
     "lint": "eslint . --ext .ts"
   },
@@ -32,6 +32,7 @@
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-node": "^11.1.0",
     "jest": "^28.1.1",
+    "nodemon": "^2.0.16",
     "supertest": "^6.2.3",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3"

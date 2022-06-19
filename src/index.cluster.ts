@@ -9,7 +9,6 @@ import { IUserService, UserInfo, UserResponseData } from './users/user.interface
 import { PrimaryRequestMessage, UserClusterDB } from './users/user.cluster.database.js';
 
 if (cluster.isPrimary) {
-  let requestsNumber = 0;
   const userService: IUserService = new UserDB();
   cluster.setupPrimary({
     silent: true,
@@ -25,7 +24,6 @@ if (cluster.isPrimary) {
   async function messageHandler(msg: PrimaryRequestMessage, worker: Worker | undefined) {
     const { cmd, args } = msg;
     if (cmd) {
-      requestsNumber += 1;
       const id = args.id || '';
       const userInfo = args.userInfo || {};
 
