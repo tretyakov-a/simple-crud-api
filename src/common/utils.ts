@@ -19,3 +19,8 @@ export const readRequestBody = async (req: IncomingMessage | undefined): Promise
     })
   });
 }
+
+export const checkType = <T>(v: T, type: string): boolean => {
+  if (v === undefined) return true;
+  return typeof v === type;
+}
