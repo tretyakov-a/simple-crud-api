@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node ./src/index.ts",
+    "test": "rm -rf ./dist/* && tsc && cross-env NODE_OPTIONS=--experimental-vm-modules jest ./tests",
+    "start:prod": "rm -rf ./dist/* && tsc && node ./dist/index.js",
+    "start:multi": "rm -rf ./dist/* && tsc && node ./dist/index.cluster.js",
+    "start:dev": "nodemon ./src/index.ts",
     "lint": "eslint . --ext .ts"
   },
   "repository": {
@@ -20,15 +23,25 @@
   },
   "homepage": "https://github.com/tretyakov-a/simple-crud-api#readme",
   "devDependencies": {
+    "@types/node": "^17.0.41",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "@typescript-eslint/parser": "^5.27.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.17.0",
     "eslint-config-airbnb-typescript": "^17.0.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "prettier": "^2.6.2",
+    "eslint-plugin-node": "^11.1.0",
+    "jest": "^28.1.1",
+    "nodemon": "^2.0.16",
+    "supertest": "^6.2.3",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "uuid": "^8.3.2"
+  },
+  "engines": {
+    "node": ">=14.19.3"
   }
 }
