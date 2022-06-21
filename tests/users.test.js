@@ -195,6 +195,17 @@ describe('3: Testing data errors', () => {
     expect(response.status).toBe(400);
     expect(response.text).toBe(errorText);
   });
+
+  const invalidJSON = `{"username":"Valera","age":32,"hobbies":["programming"],}`;
+
+  it('With a POST api/users request, we try to create new record using invalid JSON', async () => {
+    const response = await request
+      .post('/api/users')
+      .set('Content-type', 'application/json')
+      .send(invalidJSON);
+    expect(response.status).toBe(500);
+    expect(response.text).toBe('Internal server error!');
+  });
 });
 
 

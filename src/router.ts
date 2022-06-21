@@ -53,10 +53,12 @@ export class Router<T> {
     } catch (err) {
       const { httpErrorMessage, httpResponseCode } = err as HttpError;
       logMessage(req.method as HttpMethod, httpResponseCode);
+      const code = !httpResponseCode ? HttpCodes.SERVER_ERROR : httpResponseCode;
+      const message = !httpResponseCode ? 'Internal server error!' : httpErrorMessage;
       this.setResponse(
-        httpResponseCode || HttpCodes.BAD_REQUEST,
+        code,
         { 'Content-Type': 'text/html; charset=UTF-8' },
-        httpErrorMessage
+        message
       );
     }
   }
