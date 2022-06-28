@@ -14,13 +14,6 @@ if (cluster.isPrimary) {
     silent: true,
   });
 
-  const cpusNumber = os.cpus().length;
-
-  for (let i = 0; i < cpusNumber; i++) {
-    const worker = cluster.fork();
-    worker.process?.stdout?.pipe(process.stdout);
-  }
-
   async function messageHandler(msg: PrimaryRequestMessage, worker: Worker | undefined) {
     const { cmd, args } = msg;
     if (cmd) {
@@ -43,9 +36,12 @@ if (cluster.isPrimary) {
     }
   }
 
-  for (const id in cluster.workers) {
-    const worker = cluster.workers[id];
-    worker?.on('message', (msg) => {
+  const cpusNumber = os.cpus().length;
+
+  for (let i = 0; i < cpusNumber; i++) {
+    const worker = cluster.fork();
+    worker.process?.stdout?.pipe(process.stdout);
+    worker.on('message', (msg) => {
       messageHandler(msg, worker)
     });
   }

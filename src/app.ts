@@ -9,8 +9,8 @@ export class App {
   public router: Router<RouterData>;
   public readonly server: http.Server;
 
-  constructor(userService: Router<RouterData>) {
-    this.router = userService;
+  constructor(router: Router<RouterData>) {
+    this.router = router;
     this.server = http.createServer(this.router.process);
   }
 
