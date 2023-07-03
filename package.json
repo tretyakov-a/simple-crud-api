@@ -7,7 +7,7 @@
   "scripts": {
     "test": "rm -rf ./dist/* && tsc && cross-env NODE_OPTIONS=--experimental-vm-modules jest ./tests",
     "start:prod": "rm -rf ./dist/* && tsc && node ./dist/index.js",
-    "start:multi": "rm -rf ./dist/* && tsc && node ./dist/index.cluster.js",
+    "start:multi": "rm -rf ./dist/* && tsc && node ./dist/cluster/index.js",
     "start:dev": "nodemon ./src/index.ts",
     "lint": "eslint . --ext .ts"
   },
@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/tretyakov-a/simple-crud-api#readme",
   "devDependencies": {
-    "@types/node": "^17.0.41",
+    "@types/node": "^20.3.2",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.27.1",
     "@typescript-eslint/parser": "^5.27.1",
