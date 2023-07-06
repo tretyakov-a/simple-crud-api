@@ -3,6 +3,7 @@ import { readRequestBody } from '../common/utils.js';
 import { UserInfo, UserResponseData } from './user.interface.js';
 import { InvalidRequestError } from '../errors.js';
 import { HttpCodes } from '../common/constants.js';
+import { IncomingMessage } from "http";
 
 const baseUrl = '/api/users';
 
@@ -19,9 +20,8 @@ userRouter.get(`${baseUrl}/{userId}`, async function(): ProcessResult {
   return { data, responseCode: HttpCodes.OK };
 });
 
-userRouter.post(baseUrl, async function(): ProcessResult {
-  const body = await readRequestBody(this.request);
-  const { username, age, hobbies }: Partial<UserInfo> = JSON.parse(body);
+userRouter.post(baseUrl, async function(req?: IncomingMessage): ProcessResult {
+  const { username, age, hobbies } = await readRequestBody<Partial<UserInfo>>(req);
   if (!username || !age || !hobbies) {
     throw new InvalidRequestError();
   }
@@ -29,9 +29,8 @@ userRouter.post(baseUrl, async function(): ProcessResult {
   return { data, responseCode: HttpCodes.CREATED };
 });
 
-userRouter.put(`${baseUrl}/{userId}`, async function(): ProcessResult {
-  const body = await readRequestBody(this.request);
-  const { username, age, hobbies }: Partial<UserInfo> = JSON.parse(body);
+userRouter.put(`${baseUrl}/{userId}`, async function(req?: IncomingMessage): ProcessResult {
+  const { username, age, hobbies } = await readRequestBody<Partial<UserInfo>>(req);
   const userData: Partial<UserInfo> = {};
   if (username) userData.username = username;
   if (age) userData.age = age;
