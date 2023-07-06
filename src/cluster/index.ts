@@ -11,11 +11,10 @@ import startLoadBalancer from './load-balancer.js';
 const { PORT } = config;
 
 const messageHandler = (userService: IUserService) => async (msg: PrimaryRequestMessage, worker: Worker | undefined) => {
-  const { cmd, args } = msg;
+  const { id: messageId, cmd, args } = msg;
   if (cmd) {
     const id = args.id || '';
     const userInfo = args.userInfo || {};
-
     let result: UserResponseData = [];
     try {
       switch(cmd) {
@@ -26,9 +25,9 @@ const messageHandler = (userService: IUserService) => async (msg: PrimaryRequest
         case 'putUser': result = await userService.putUser(id, userInfo); break;
       }
     } catch (err) {
-      return worker?.send({ err });
+      return worker?.send({ id: messageId, err });
     }
-    return worker?.send({ data: result });
+    return worker?.send({ id: messageId, data: result });
   }
 }
 
@@ -47,10 +46,10 @@ if (cluster.isPrimary) {
     worker.on('message', (msg) => {
       messageHandlerWithUserService(msg, worker)
     });
+
   }
 
   startLoadBalancer(numOfWorkers);
-
 } else {
   startWorker();
 }

@@ -17,14 +17,12 @@ export interface IProcessResult<T> {
 }
 
 export interface IRouteProcessor<T> {
-  (this: Router<T>): Promise<IProcessResult<T>>
+  (this: Router<T>, req?: IncomingMessage): Promise<IProcessResult<T>>
 }
 
 export class Router<T> {
   private routes: IRoute<T>[];
   public url?: Url;
-  public request?: IncomingMessage;
-  public response?: ServerResponse;
   public userService?: IUserService;
 
   constructor() {
@@ -38,14 +36,14 @@ export class Router<T> {
     }
     try {
       this.url = new Url(req.url);
-      this.request = req;
-      this.response = res;
-      this.checkRequestHeaders();
+
+      this.checkRequestHeaders(req);
       
       const { processor } = this.getRoute(req.method as HttpMethod);
-      const { data, responseCode } = await processor.call(this);
+      const { data, responseCode } = await processor.call(this, req);
       logMessage(req.method as HttpMethod, responseCode);
       this.setResponse(
+        res,
         responseCode,
         { 'Content-Type': 'application/json' },
         data
@@ -56,6 +54,7 @@ export class Router<T> {
       const code = !httpResponseCode ? HttpCodes.SERVER_ERROR : httpResponseCode;
       const message = !httpResponseCode ? 'Internal server error!' : httpErrorMessage;
       this.setResponse(
+        res,
         code,
         { 'Content-Type': 'text/html; charset=UTF-8' },
         message
@@ -63,17 +62,16 @@ export class Router<T> {
     }
   }
 
-  private checkRequestHeaders() {
-    const { headers, method } = this.request as IncomingMessage;
+  private checkRequestHeaders({ headers, method } : IncomingMessage) {
     const { POST, PUT } = HttpMethod;
     if ((method === POST || method === PUT) && headers['content-type'] !== 'application/json') {
       throw new InvalidRequestError();
     }
   }
-
-  private setResponse(code: number, headers: OutgoingHttpHeaders, data: T | string | undefined) {
-    this.response?.writeHead(code, headers);
-    this.response?.end(typeof data === 'string' ? data : JSON.stringify(data));
+  
+  private setResponse(res: ServerResponse, code: number, headers: OutgoingHttpHeaders, data: T | string | undefined) {
+    res.writeHead(code, headers);
+    res.end(typeof data === 'string' ? data : JSON.stringify(data));
   }
 
   private getRoute(method: HttpMethod): IRoute<T> {

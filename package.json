@@ -9,6 +9,7 @@
     "start:prod": "rm -rf ./dist/* && tsc && node ./dist/index.js",
     "start:multi": "rm -rf ./dist/* && tsc && node ./dist/cluster/index.js",
     "start:dev": "nodemon ./src/index.ts",
+    "start:multi-dev": "nodemon ./src/cluster/index.ts",
     "lint": "eslint . --ext .ts"
   },
   "repository": {
